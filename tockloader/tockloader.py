@@ -377,8 +377,11 @@ class TockLoader:
 		'''
 		Print all info about this board.
 		'''
+
 		# Enter bootloader mode to get things started
 		with self._start_communication_with_board():
+			if self.channel.get_app_address() is not None:
+				app_address = self.channel.get_app_address()
 
 			# Print all apps
 			print('Apps:')

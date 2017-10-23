@@ -294,7 +294,7 @@ def main ():
 	parent_apps.add_argument('--app-address', '-a',
 		help='Address where apps are located',
 		type=lambda x: int(x, 0),
-		default=0x30000)
+		default=None)
 	parent_apps.add_argument('--force',
 		help='Allow apps on boards that are not listed as compatible',
 		action='store_true')

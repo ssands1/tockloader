@@ -611,17 +611,22 @@ class BootloaderSerial(BoardInterface):
 			return None
 
 	def determine_current_board (self):
-		if self.board and self.arch:
+		if self.board and self.arch and self.appaddr:
 			# These are already set! Yay we are done.
 			return
 
 		# The primary (only?) way to do this is to look at attributes
 		attributes = self.get_all_attributes()
 		for attribute in attributes:
+			if attribute and attribute['key'] == 'appaddr' and self.appaddr == None:
+				self.appaddr = int(attribute['value'], 0)
 			if attribute and attribute['key'] == 'board' and self.board == None:
 				self.board = attribute['value']
 			if attribute and attribute['key'] == 'arch' and self.arch == None:
 				self.arch = attribute['value']
+
+		if self.appaddr == None:
+			self.appaddr = 0x30000
 
 		# Check that we learned what we needed to learn.
 		if self.board == None:

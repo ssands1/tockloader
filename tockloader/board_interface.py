@@ -12,6 +12,7 @@ class BoardInterface:
 		# command line. Another is the attributes section on the board.
 		# There could be more in the future.
 		# Also, not all are required depending on the connection method used.
+		self.appaddr = getattr(self.args, 'app_address', None)
 		self.board = getattr(self.args, 'board', None)
 		self.arch = getattr(self.args, 'arch', None)
 		self.jtag_device = getattr(self.args, 'jtag_device', None)
@@ -117,3 +118,8 @@ class BoardInterface:
 		Return the architecture of the board we are connected to.
 		'''
 		return self.arch
+	def get_app_address (self):
+		'''
+		Return the architecture of the board we are connected to.
+		'''
+		return self.appaddr
