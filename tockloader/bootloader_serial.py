@@ -554,38 +554,50 @@ class BootloaderSerial(BoardInterface):
 		else:
 			print('CRC check passed. Binaries successfully loaded.')
 
-	def get_attribute (self, index):
-		message = struct.pack('<B', index)
-		success, ret = self._issue_command(self.COMMAND_GET_ATTRIBUTE, message, True, 64, self.RESPONSE_GET_ATTRIBUTE)
+	def get_attribute (self, index, location='bootloader'):
+		if location == 'bootloader':
+			message = struct.pack('<B', index)
+			success, ret = self._issue_command(self.COMMAND_GET_ATTRIBUTE, message, True, 64, self.RESPONSE_GET_ATTRIBUTE)
 
-		if not success:
-			if ret[1] == self.RESPONSE_BADADDR:
-				raise TockLoaderException('Error: Attribute number is invalid.')
-			elif ret[1] == self.RESPONSE_BADARGS:
-				raise TockLoaderException('Error: Need to supply a correct attribute index.')
-			else:
-				raise TockLoaderException('Error: 0x{:X}'.format(ret[1]))
-		return self._decode_attribute(ret)
+			if not success:
+				if ret[1] == self.RESPONSE_BADADDR:
+					raise TockLoaderException('Error: Attribute number is invalid.')
+				elif ret[1] == self.RESPONSE_BADARGS:
+					raise TockLoaderException('Error: Need to supply a correct attribute index.')
+				else:
+					raise TockLoaderException('Error: 0x{:X}'.format(ret[1]))
+			return self._decode_attribute(ret)
 
-	def get_all_attributes (self):
+		elif location == 'kernel':
+			# Read from the kernel attributes table.
+			kernel_address = self.get_kernel_start_address()
+			# Attributes start 3 pages after that.
+			attribute_address = kernel_address + (3*512) + (index*64)
+			return self._decode_attribute(self.read_range(attribute_address, 64))
+
+	def get_all_attributes (self, location='bootloader'):
 		attributes = []
 		for index in range(0, 16):
-			attributes.append(self.get_attribute(index))
+			attributes.append(self.get_attribute(index, location))
 		return attributes
 
-	def set_attribute (self, index, raw):
-		message = struct.pack('<B', index) + raw
-		success, ret = self._issue_command(self.COMMAND_SET_ATTRIBUTE, message, True, 0, self.RESPONSE_OK)
+	def set_attribute (self, index, raw, location='bootloader'):
+		if location == 'bootloader':
+			message = struct.pack('<B', index) + raw
+			success, ret = self._issue_command(self.COMMAND_SET_ATTRIBUTE, message, True, 0, self.RESPONSE_OK)
 
-		if not success:
-			if ret[1] == self.RESPONSE_BADADDR:
-				raise TockLoaderException('Error: Attribute number is invalid.')
-			elif ret[1] == self.RESPONSE_BADARGS:
-				raise TockLoaderException('Error: Wrong length of attribute set packet.')
-			elif ret[1] == self.RESPONSE_INTERROR:
-				raise TockLoaderException('Error: Internal error when setting attribute.')
-			else:
-				raise TockLoaderException('Error: 0x{:X}'.format(ret[1]))
+			if not success:
+				if ret[1] == self.RESPONSE_BADADDR:
+					raise TockLoaderException('Error: Attribute number is invalid.')
+				elif ret[1] == self.RESPONSE_BADARGS:
+					raise TockLoaderException('Error: Wrong length of attribute set packet.')
+				elif ret[1] == self.RESPONSE_INTERROR:
+					raise TockLoaderException('Error: Internal error when setting attribute.')
+				else:
+					raise TockLoaderException('Error: 0x{:X}'.format(ret[1]))
+
+		elif location == 'kernel':
+			raise TockLoaderException('Writing kernel attributes not implemented.')
 
 	def bootloader_is_present (self):
 		'''

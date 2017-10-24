@@ -295,10 +295,13 @@ class TockLoader:
 		# Enter bootloader mode to get things started
 		with self._start_communication_with_board():
 
-			if not self._bootloader_is_present():
-				raise TockLoaderException('No bootloader found! That means there is nowhere for attributes to go.')
+			if self._bootloader_is_present():
+				print('Bootloader attributes:')
+				self._print_attributes(self.channel.get_all_attributes(location='bootloader'))
 
-			self._print_attributes(self.channel.get_all_attributes())
+			if self.channel.kernel_is_present():
+				print('Kernel attributes:')
+				self._print_attributes(self.channel.get_all_attributes(location='kernel'))
 
 
 	def set_attribute (self, key, value):
@@ -329,11 +332,11 @@ class TockLoader:
 
 			# Find if this attribute key already exists
 			open_index = -1
-			for index, attribute in enumerate(self.channel.get_all_attributes()):
+			for index, attribute in enumerate(self.channel.get_all_attributes(location='bootloader')):
 				if attribute:
 					if attribute['key'] == key:
 						print('Found existing key at slot {}. Overwriting.'.format(index))
-						self.channel.set_attribute(index, out)
+						self.channel.set_attribute(index, out, location='bootloader')
 						break
 				else:
 					# Save where we should put this attribute if it does not
@@ -345,7 +348,7 @@ class TockLoader:
 					raise TockLoaderException('Error: No open space to save this attribute.')
 				else:
 					print('Key not found. Writing new attribute to slot {}'.format(open_index))
-					self.channel.set_attribute(open_index, out)
+					self.channel.set_attribute(open_index, out, location='bootloader')
 
 
 	def remove_attribute (self, key):
@@ -366,10 +369,10 @@ class TockLoader:
 			out = bytes([0]*9)
 
 			# Find if this attribute key already exists
-			for index, attribute in enumerate(self.channel.get_all_attributes()):
+			for index, attribute in enumerate(self.channel.get_all_attributes(location='bootloader')):
 				if attribute and attribute['key'] == key:
 					print('Found existing key at slot {}. Removing.'.format(index))
-					self.channel.set_attribute(index, out)
+					self.channel.set_attribute(index, out, location='bootloader')
 					break
 			else:
 				raise TockLoaderException('Error: Attribute does not exist.')
@@ -389,8 +392,8 @@ class TockLoader:
 
 			if self._bootloader_is_present():
 				# Print all attributes
-				print('Attributes:')
-				attributes = self.channel.get_all_attributes()
+				print('Bootloader attributes:')
+				attributes = self.channel.get_all_attributes(location='bootloader')
 				self._print_attributes(attributes)
 				print('')
 
@@ -401,6 +404,11 @@ class TockLoader:
 				print('Bootloader version: {}'.format(version))
 			else:
 				print('No bootloader.')
+
+			if self.channel.kernel_is_present():
+				print('\nKernel attributes:')
+				attributes = self.channel.get_all_attributes(location='kernel')
+				self._print_attributes(attributes)
 
 
 	def dump_flash_page (self, page_num):

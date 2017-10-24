@@ -17,6 +17,10 @@ class BoardInterface:
 		self.arch = getattr(self.args, 'arch', None)
 		self.jtag_device = getattr(self.args, 'jtag_device', None)
 
+		# Reserve a spot to record the address of the kernel.
+		self.kernel_address = None
+		self.kernel_exists = None
+
 	def open_link_to_board (self):
 		'''
 		Open a connection to the board.
@@ -54,19 +58,19 @@ class BoardInterface:
 		'''
 		return
 
-	def get_attribute (self, index):
+	def get_attribute (self, index, location='bootloader'):
 		'''
 		Get a single attribute.
 		'''
 		return
 
-	def get_all_attributes (self):
+	def get_all_attributes (self, location='bootloader'):
 		'''
 		Get all attributes on a board.
 		'''
 		return
 
-	def set_attribute (self, index, raw):
+	def set_attribute (self, index, raw, location='bootloader'):
 		'''
 		Set a single attribute.
 		'''
@@ -93,12 +97,50 @@ class BoardInterface:
 		'''
 		return None
 
+	def kernel_is_present (self):
+		'''
+		Check for the presence of a Tock kernel based on the string "TockKernel"
+		being in the correct spot in flash.
+		'''
+		# Check if we have already looked this up.
+		if self.kernel_exists != None:
+			return self.kernel_exists
+
+		# Otherwise actually check the board.
+		kernel_address = self.get_kernel_start_address()
+		# It comes immediately after the vector table.
+		magic_string_address = kernel_address + (512*2)
+		magic_string = self.read_range(magic_string_address, 10).decode('utf-8')
+		self.kernel_exists = magic_string == 'TockKernel'
+		return self.kernel_exists
+
+
 	def get_bootloader_version (self):
 		'''
 		Return the version string of the bootloader. Should return a value
 		like `0.5.0`, or `None` if it is unknown.
 		'''
 		return
+
+	def get_kernel_start_address (self):
+		'''
+		Return the address in flash where the kernel is.
+		'''
+
+		# Check for a saved copy.
+		if self.kernel_address != None:
+			return self.kernel_address
+
+		# Else check the attributes.
+		attributes = self.get_all_attributes()
+		for attribute in attributes:
+			if attribute and attribute['key'] == 'kernaddr':
+				self.kernel_address = int(attribute['value'], 0)
+				return self.kernel_address
+
+		# Otherwise use the default
+		self.kernel_address = 0x10000
+		return self.kernel_address
 
 	def get_apps_start_address (self):
 		'''
