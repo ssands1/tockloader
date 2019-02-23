@@ -228,7 +228,7 @@ def command_read (args):
 def command_list_permissions (args):
 	tock_loader = TockLoader(args)
 	tock_loader.open(args)
-	harglaskdf;ljkfads.asd.,msfa;ljk())(())
+
 	print('No apps have permision policies')
 
 
