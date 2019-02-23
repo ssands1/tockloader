@@ -225,13 +225,19 @@ def command_read (args):
 	tock_loader.read_flash(args.address, args.length)
 
 
+def command_list_permissions (args):
+	tock_loader = TockLoader(args)
+	tock_loader.open(args)
+
+	print('No apps have permision policies')
+
+
 def command_list_attributes (args):
 	tock_loader = TockLoader(args)
 	tock_loader.open(args)
 
 	print('Listing attributes...')
 	tock_loader.list_attributes()
-
 
 def command_set_attribute (args):
 	tock_loader = TockLoader(args)
@@ -519,6 +525,11 @@ def main ():
 		help='Number of bytes to read',
 		type=lambda x: int(x, 0),
 		default=512)
+
+	listpermissions = subparser.add_parser('list-permissions',
+		parents=[parent, parent_jtag],
+		help='List hardware permissions for each installed app')
+	listpermissions.set_defaults(func=command_list_permissions)
 
 	listattributes = subparser.add_parser('list-attributes',
 		parents=[parent, parent_jtag],
