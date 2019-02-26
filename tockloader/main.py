@@ -421,7 +421,7 @@ def main ():
 	listen.set_defaults(func=command_listen)
 
 	listcmd = subparser.add_parser('list',
-		parents=[parent, parent_apps],
+		parents=[parent, parent_apps, parent_jtag],
 		help='List the apps installed on the board')
 	listcmd.set_defaults(func=command_list)
 	listcmd.add_argument('--verbose', '-v',
