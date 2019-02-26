@@ -93,6 +93,11 @@ class TockLoader:
 		# Check if we have any apps to install. If not, then we can quit early.
 		if len(tabs) == 0:
 			raise TockLoaderException('No TABs to install')
+		else:
+			print("FINDING TABS --------------")
+			for tab in tabs:
+				print(tab.parse_metadata()[name])
+			print("---------------------------")
 
 		# Enter bootloader mode to get things started
 		with self._start_communication_with_board():
