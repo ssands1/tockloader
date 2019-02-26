@@ -421,7 +421,7 @@ def main ():
 	listen.set_defaults(func=command_listen)
 
 	listcmd = subparser.add_parser('list',
-		parents=[parent, parent_apps, parent_jtag],
+		parents=[parent, parent_apps],
 		help='List the apps installed on the board')
 	listcmd.set_defaults(func=command_list)
 	listcmd.add_argument('--verbose', '-v',
@@ -527,7 +527,7 @@ def main ():
 		default=512)
 
 	listpermissions = subparser.add_parser('list-permissions',
-		parents=[parent, parent_jtag],
+		parents=[parent, parent_apps],
 		help='List hardware permissions for each installed app')
 	listpermissions.set_defaults(func=command_list_permissions)
 
