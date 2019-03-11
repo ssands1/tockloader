@@ -767,12 +767,13 @@ class BootloaderSerial(BoardInterface):
 		self.miniterm.set_rx_encoding('UTF-8')
 		self.miniterm.set_tx_encoding('UTF-8')
 
-		self.miniterm.start()
-		try:
-			self.miniterm.join(True)
-		except KeyboardInterrupt:
-			pass
+		print("ok yah so now we know")
+		# self.miniterm.start()
+		# try:
+		# 	self.miniterm.join(True)
+		# except KeyboardInterrupt:
+		# 	pass
 
-		self.miniterm.stop()
-		self.miniterm.join()
-		self.miniterm.close()
+		# self.miniterm.stop()
+		# self.miniterm.join()
+		# self.miniterm.close()
