@@ -55,12 +55,49 @@ class TBFHeader:
 				self.valid = True
 
 		elif self.version == 2 and len(buffer) >= 14:
-			base = struct.unpack('<HIII', buffer[0:14])
+			base = struct.unpack('<HIIQI', buffer[0:14])
 			buffer = buffer[14:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
 			self.fields['flags'] = base[2]
-			self.fields['checksum'] = base[3]
+			self.fields['permissions'] = base[3]
+			self.fields['checksum'] = base[4]
+
+			# permission bit mappings
+			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
+			# lest a user grant access to the wrong hardware.
+			self.fields['permission_bits'] = {
+				'ADC': 5,
+				'ALARM': 0,
+				'AMBIENT_LIGHT': 20,
+				'ANALOG_COMPARATOR': 7,
+				'APP_FLASH': 15,
+				'BLE_ADVERTISING': 11,
+				'BUTTON': 3,
+				'CONSOLE': 1,
+				'CRC': 13,
+				'DAC': 6,
+				'GPIO': 4,
+				'GPIO_ASYNC': 28,
+				'HUMIDITY': 19,
+				'I2C_MASTER': 14,
+				'I2C_MASTER_SLAVE': 10,
+				'LED': 2,
+				'LPS25HB': 24,
+				'LTC294X': 25,
+				'MAX17205': 26,
+				'NINEDOF': 21,
+				'NRF51822_SERIALIZATION': 29,
+				'NVM_STORAGE': 16,
+				'PCA9544A': 27,
+				'RNG': 12,
+				'SD_CARD': 17,
+				'SPI': 8,
+				'TEMPERATURE': 18,
+				'TMP006': 23,
+				'TSL2561': 22,
+				'USB_USER': 9
+			}
 
 			if len(full_buffer) >= self.fields['header_size']:
 				# Zero out checksum for checksum calculation.
@@ -193,6 +230,25 @@ class TBFHeader:
 				self.fields['flags'] |= 0x02;
 			else:
 				self.fields['flags'] &= ~0x02;
+
+	def set_permission (self, name, value):
+		'''
+		Set a permission in the TBF header.
+		Permissions are represented by a u64, with each driver
+		corresponding to a specific bit.
+		'''
+		if self.version == 1 or not self.valid:
+			return
+
+		bit = self.fields.permission_bits.get(name.upper())
+		if bit == None:
+			print('error: permission bit does not exist')
+			return
+
+		if value.lower() == 'true' || value.lower() = 't' || value == '1':
+			self.fields['flags']['permissions'] |= 1 << bit
+		else:
+			self.fields['flags']['permissions'] &= ~(1 << bit)
 
 	def get_app_size (self):
 		'''
