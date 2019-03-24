@@ -540,7 +540,7 @@ def main ():
 		type=lambda x: int(x, 0),
 		default=512)
 
-	allowpermission = subparser.add_parser('set-permission',
+	allowpermission = subparser.add_parser('allow-permission',
 		parents=[parent, parent_apps, parent_jtag],
 		help='Allow or disallow an app to access certain hardware')
 	allowpermission.set_defaults(func=command_allow_permission)
