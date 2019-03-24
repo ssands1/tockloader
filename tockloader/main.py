@@ -197,7 +197,7 @@ def command_allow_permission (args):
 
 	print(args.name)
 	print('Allowing access to LED...')
-	tock_loader.set_permission(args.name, 'led', 'True')
+	tock_loader.set_permission(args.name, args.permision, 'True')
 
 # def command_disallow_permission (args):
 # 	tock_loader = TockLoader(args)
@@ -544,6 +544,8 @@ def main ():
 		parents=[parent, parent_apps, parent_jtag],
 		help='Allow or disallow an app to access certain hardware')
 	allowpermission.set_defaults(func=command_allow_permission)
+	allowpermission.add_argument('permission',
+		help='The permission that you want to allow')
 	allowpermission.add_argument('name',
 		help='The name of the app(s) for which this permission will be allowed',
 		nargs='*')

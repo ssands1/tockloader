@@ -248,7 +248,9 @@ class TBFHeader:
 
 		if value.lower() == 'true' or value.lower() == 't' or value == '1':
 			self.fields['permissions'] |= 1 << bit
+			print('Successfully allowed %s'%name)
 		else:
+			print('Successfully disallowed %s'%name)
 			self.fields['permissions'] &= ~(1 << bit)
 
 	def get_app_size (self):
