@@ -241,7 +241,7 @@ class TBFHeader:
 		if self.version == 1 or not self.valid:
 			return
 
-		bit = self.fields.permission_bits.get(name.upper())
+		bit = self.fields['permission_bits'].get(name.upper())
 		if bit == None:
 			print('error: permission bit does not exist')
 			return
