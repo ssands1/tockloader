@@ -544,8 +544,8 @@ def main ():
 		parents=[parent, parent_apps, parent_jtag],
 		help='Allow or disallow an app to access certain hardware')
 	allowpermission.set_defaults(func=command_allow_permission)
-	unstickyapp.add_argument('name',
-		help='The name of the app(s) to unsticky',
+	allowpermission.add_argument('name',
+		help='The name of the app(s) for which this permission will be allowed',
 		nargs='*')
 	# setpermission.add_argument('name',
 	# 	help='The name of the permission to change')
