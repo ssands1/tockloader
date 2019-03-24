@@ -330,6 +330,7 @@ class TockLoader:
 			# Configure all selected apps
 			changed = False
 			for app in apps:
+				print('app: %s'%app.name)
 				if app.name in app_names:
 					app.tbfh.set_permission(permission_name, permission_value)
 					changed = True
