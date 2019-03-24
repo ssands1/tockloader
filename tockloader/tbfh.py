@@ -101,12 +101,13 @@ class TBFHeader:
 
 			if len(full_buffer) >= self.fields['header_size']:
 				# Zero out checksum for checksum calculation.
+				print(self.fields['header_size'])
 				nbuf = bytearray(self.fields['header_size'])
 				nbuf[:] = full_buffer[0:self.fields['header_size']]
-				struct.pack_into('<I', nbuf, 12, 0)
+				struct.pack_into('<I', nbuf, 20, 0)
 				checksum = self._checksum(nbuf)
 
-				remaining = self.fields['header_size'] - 16
+				remaining = self.fields['header_size'] - 24
 
 				# Now check to see if this is an app or padding.
 				if remaining > 0 and len(buffer) >= remaining:
