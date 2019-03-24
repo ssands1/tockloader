@@ -197,7 +197,7 @@ def command_allow_permission (args):
 
 	print(args.name)
 	print('Allowing access to LED...')
-	tock_loader.set_permission(args.name, args.permision, 'True')
+	tock_loader.set_permission(args.name, args.permission, 'True')
 
 # def command_disallow_permission (args):
 # 	tock_loader = TockLoader(args)
