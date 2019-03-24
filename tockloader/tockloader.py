@@ -96,7 +96,7 @@ class TockLoader:
 		else:
 			print("FINDING TABS --------------")
 			for tab in tabs:
-				print(tab.parse_metadata())
+				print(tab.parse_metadata()[name])
 			print("---------------------------")
 
 		# Enter bootloader mode to get things started

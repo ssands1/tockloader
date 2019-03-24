@@ -54,9 +54,9 @@ class TBFHeader:
 			if checksum == self.fields['checksum']:
 				self.valid = True
 
-		elif self.version == 2 and len(buffer) >= 14:
-			base = struct.unpack('<HIIQI', buffer[0:14])
-			buffer = buffer[14:]
+		elif self.version == 2 and len(buffer) >= 22:
+			base = struct.unpack('<HIIQI', buffer[:22])
+			buffer = buffer[22:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
 			self.fields['flags'] = base[2]
