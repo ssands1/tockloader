@@ -245,7 +245,7 @@ class TBFHeader:
 			print('error: permission bit does not exist')
 			return
 
-		if value.lower() == 'true' or value.lower() = 't' or value == '1':
+		if value.lower() == 'true' or value.lower() == 't' or value == '1':
 			self.fields['flags']['permissions'] |= 1 << bit
 		else:
 			self.fields['flags']['permissions'] &= ~(1 << bit)
