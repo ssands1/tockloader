@@ -54,22 +54,60 @@ class TBFHeader:
 			if checksum == self.fields['checksum']:
 				self.valid = True
 
-		elif self.version == 2 and len(buffer) >= 14:
-			base = struct.unpack('<HIII', buffer[0:14])
-			buffer = buffer[14:]
+		elif self.version == 2 and len(buffer) >= 22:
+			base = struct.unpack('<HIIQI', buffer[:22])
+			buffer = buffer[22:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
 			self.fields['flags'] = base[2]
-			self.fields['checksum'] = base[3]
+			self.fields['permissions'] = base[3]
+			self.fields['checksum'] = base[4]
+
+			# permission bit mappings
+			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
+			# lest a user grant access to the wrong hardware.
+			self.fields['permission_bits'] = {
+				'ADC': 5,
+				'ALARM': 0,
+				'AMBIENT_LIGHT': 20,
+				'ANALOG_COMPARATOR': 7,
+				'APP_FLASH': 15,
+				'BLE_ADVERTISING': 11,
+				'BUTTON': 3,
+				'CONSOLE': 1,
+				'CRC': 13,
+				'DAC': 6,
+				'GPIO': 4,
+				'GPIO_ASYNC': 28,
+				'HUMIDITY': 19,
+				'I2C_MASTER': 14,
+				'I2C_MASTER_SLAVE': 10,
+				'LED': 2,
+				'LPS25HB': 24,
+				'LTC294X': 25,
+				'MAX17205': 26,
+				'NINEDOF': 21,
+				'NRF51822_SERIALIZATION': 29,
+				'NVM_STORAGE': 16,
+				'PCA9544A': 27,
+				'RNG': 12,
+				'SD_CARD': 17,
+				'SPI': 8,
+				'TEMPERATURE': 18,
+				'TMP006': 23,
+				'TSL2561': 22,
+				'USB_USER': 9
+			}
 
 			if len(full_buffer) >= self.fields['header_size']:
 				# Zero out checksum for checksum calculation.
+				print(self.fields['header_size'])
 				nbuf = bytearray(self.fields['header_size'])
 				nbuf[:] = full_buffer[0:self.fields['header_size']]
-				struct.pack_into('<I', nbuf, 12, 0)
+				struct.pack_into('<I', nbuf, 20, 0)
 				checksum = self._checksum(nbuf)
 
-				remaining = self.fields['header_size'] - 16
+				remaining = self.fields['header_size'] - 24
 
 				# Now check to see if this is an app or padding.
 				if remaining > 0 and len(buffer) >= remaining:
@@ -122,7 +160,7 @@ class TBFHeader:
 
 								self.pic_strategy = 'C Style'
 						else:
-							print('Warning: Unknown TLV block in TBF header.')
+							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
 							print('Warning: You might want to update tockloader.')
 
 						# All blocks are padded to four byte, so we may need to
@@ -193,6 +231,27 @@ class TBFHeader:
 				self.fields['flags'] |= 0x02;
 			else:
 				self.fields['flags'] &= ~0x02;
+
+	def set_permission (self, name, value):
+		'''
+		Set a permission in the TBF header.
+		Permissions are represented by a u64, with each driver
+		corresponding to a specific bit.
+		'''
+		if self.version == 1 or not self.valid:
+			return
+
+		bit = self.fields['permission_bits'].get(name.upper())
+		if bit == None:
+			print('error: permission bit does not exist')
+			return
+
+		if value.lower() == 'true' or value.lower() == 't' or value == '1':
+			self.fields['permissions'] |= 1 << bit
+			print('Successfully allowed %s'%name)
+		else:
+			print('Successfully disallowed %s'%name)
+			self.fields['permissions'] &= ~(1 << bit)
 
 	def get_app_size (self):
 		'''

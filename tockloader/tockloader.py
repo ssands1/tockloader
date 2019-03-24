@@ -96,7 +96,7 @@ class TockLoader:
 		else:
 			print("FINDING TABS --------------")
 			for tab in tabs:
-				print(tab.parse_metadata()[name])
+				print(tab.parse_metadata()['name'])
 			print("---------------------------")
 
 		# Enter bootloader mode to get things started
@@ -301,6 +301,44 @@ class TockLoader:
 			else:
 				print('No matching apps found. Nothing changed.')
 
+	def set_permission (self, app_names, permission_name, permission_value):
+		'''
+		Set a permission bit in the TBF header.
+		'''
+		# Enter bootloader mode to get things started
+		with self._start_communication_with_board():
+
+			# Get a list of installed apps
+			apps = self._extract_all_app_headers()
+
+			if len(apps) == 0:
+				raise TockLoaderException('No apps are installed on the board')
+
+			# User did not specify apps. Pick from list.
+			if len(app_names) == 0:
+				print('Which apps to configure?')
+				options = ['** All']
+				options.extend([app.name for app in apps])
+				name = helpers.menu(options,
+						return_type='value',
+						prompt='Select app to configure ')
+				if name == '** All':
+					app_names = [app.name for app in apps]
+				else:
+					app_names = [name]
+
+			# Configure all selected apps
+			changed = False
+			for app in apps:
+				print('app: %s'%app.name)
+				if app.name in app_names:
+					app.tbfh.set_permission(permission_name, permission_value)
+					changed = True
+
+			if changed:
+				self._reflash_app_headers(apps)
+			else:
+				print('No matching apps found. Nothing changed.')
 
 	def list_attributes (self):
 		'''
