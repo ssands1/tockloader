@@ -191,12 +191,20 @@ def command_unsticky_app (args):
 	print('Making apps no longer sticky...')
 	tock_loader.set_flag(args.name, 'sticky', False)
 
-def command_set_permission (args):
+def command_allow_permission (args):
 	tock_loader = TockLoader(args)
 	tock_loader.open(args)
 
-	print('Changing access to LED...')
+	print(args.name)
+	print('Allowing access to LED...')
 	tock_loader.set_permission(args.name, 'led', 'True')
+
+# def command_disallow_permission (args):
+# 	tock_loader = TockLoader(args)
+# 	tock_loader.open(args)
+
+# 	print('Changing access to LED...')
+# 	tock_loader.set_permission(args.name, 'led', 'True')
 
 def command_flash (args):
 	check_and_run_make(args)
@@ -532,14 +540,17 @@ def main ():
 		type=lambda x: int(x, 0),
 		default=512)
 
-	setpermission = subparser.add_parser('set-permission',
+	allowpermission = subparser.add_parser('set-permission',
 		parents=[parent, parent_apps, parent_jtag],
 		help='Allow or disallow an app to access certain hardware')
-	setpermission.set_defaults(func=command_set_permission)
-	setpermission.add_argument('name',
-		help='The name of the permission to change')
-	setpermission.add_argument('value',
-		help='The value of the permission to change (true/false or 0/1)')
+	setpermission.set_defaults(func=command_allow_permission)
+	unstickyapp.add_argument('name',
+		help='The name of the app(s) to unsticky',
+		nargs='*')
+	# setpermission.add_argument('name',
+	# 	help='The name of the permission to change')
+	# setpermission.add_argument('value',
+	# 	help='The value of the permission to change (true/false or 0/1)')
 
 	listpermissions = subparser.add_parser('list-permissions',
 		parents=[parent, parent_apps],
