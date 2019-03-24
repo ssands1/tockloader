@@ -543,7 +543,7 @@ def main ():
 	allowpermission = subparser.add_parser('set-permission',
 		parents=[parent, parent_apps, parent_jtag],
 		help='Allow or disallow an app to access certain hardware')
-	setpermission.set_defaults(func=command_allow_permission)
+	allowpermission.set_defaults(func=command_allow_permission)
 	unstickyapp.add_argument('name',
 		help='The name of the app(s) to unsticky',
 		nargs='*')
