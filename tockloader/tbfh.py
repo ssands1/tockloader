@@ -159,7 +159,7 @@ class TBFHeader:
 
 								self.pic_strategy = 'C Style'
 						else:
-							print('Warning: Unknown TLV block in TBF header.')
+							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
 							print('Warning: You might want to update tockloader.')
 
 						# All blocks are padded to four byte, so we may need to
