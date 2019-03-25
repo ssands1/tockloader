@@ -340,6 +340,40 @@ class TockLoader:
 			else:
 				print('No matching apps found. Nothing changed.')
 
+	def list_permissions (self, app_names):
+			with self._start_communication_with_board():
+
+			# Get a list of installed apps
+			apps = self._extract_all_app_headers()
+
+			if len(apps) == 0:
+				raise TockLoaderException('No apps are installed on the board')
+
+			# User did not specify apps. Pick from list.
+			if len(app_names) == 0:
+				print('Which apps to list?')
+				options = ['** All']
+				options.extend([app.name for app in apps])
+				name = helpers.menu(options,
+						return_type='value',
+						prompt='Select app to list ')
+				if name == '** All':
+					app_names = [app.name for app in apps]
+				else:
+					app_names = [name]
+
+			# Configure all selected apps
+			changed = False
+			for app in apps:
+				if app.name in app_names:
+					app.tbfh.list_permissions()
+					changed = True
+
+			if changed:
+				self._reflash_app_headers(apps)
+			else:
+				print('No matching apps found.')
+
 	def list_attributes (self):
 		'''
 		Download all attributes stored on the board.
