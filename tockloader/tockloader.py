@@ -341,7 +341,7 @@ class TockLoader:
 				print('No matching apps found. Nothing changed.')
 
 	def list_permissions (self, app_names):
-			with self._start_communication_with_board():
+		with self._start_communication_with_board():
 
 			# Get a list of installed apps
 			apps = self._extract_all_app_headers()
