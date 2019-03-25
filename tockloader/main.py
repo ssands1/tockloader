@@ -195,8 +195,7 @@ def command_allow_permission (args):
 	tock_loader = TockLoader(args)
 	tock_loader.open(args)
 
-	print(args.name)
-	print('Allowing access to LED...')
+	print('Allowing access to %s...' % args.permission)
 	tock_loader.set_permission(args.name, args.permission, 'True')
 
 # def command_disallow_permission (args):
@@ -243,8 +242,7 @@ def command_list_permissions (args):
 	tock_loader = TockLoader(args)
 	tock_loader.open(args)
 
-	print('No apps have permision policies')
-
+	tock_loader.list_permissions(args.name)
 
 def command_list_attributes (args):
 	tock_loader = TockLoader(args)
@@ -555,9 +553,12 @@ def main ():
 	# 	help='The value of the permission to change (true/false or 0/1)')
 
 	listpermissions = subparser.add_parser('list-permissions',
-		parents=[parent, parent_apps],
+		parents=[parent, parent_apps, parent_jtag],
 		help='List hardware permissions for each installed app')
 	listpermissions.set_defaults(func=command_list_permissions)
+	listpermissions.add_argument('name',
+		help='The name of the app(s) for which this permission will be allowed',
+		nargs='*')
 
 	listattributes = subparser.add_parser('list-attributes',
 		parents=[parent, parent_jtag],

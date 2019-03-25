@@ -66,7 +66,7 @@ class TBFHeader:
 			# permission bit mappings
 			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
 			# lest a user grant access to the wrong hardware.
-			self.fields['permission_bits'] = {
+			self.permission_bits = {
 				'ADC': 5,
 				'ALARM': 0,
 				'AMBIENT_LIGHT': 20,
@@ -241,7 +241,7 @@ class TBFHeader:
 		if self.version == 1 or not self.valid:
 			return
 
-		bit = self.fields['permission_bits'].get(name.upper())
+		bit = self.permission_bits.get(name.upper())
 		if bit == None:
 			print('error: permission bit does not exist')
 			return
@@ -250,8 +250,19 @@ class TBFHeader:
 			self.fields['permissions'] |= 1 << bit
 			print('Successfully allowed %s'%name)
 		else:
-			print('Successfully disallowed %s'%name)
 			self.fields['permissions'] &= ~(1 << bit)
+			print('Successfully disallowed %s'%name)
+
+	def list_permissions (self):
+		'''
+		Set a permission in the TBF header.
+		Permissions are represented by a u64, with each driver
+		corresponding to a specific bit.
+		'''
+		if self.version == 1 or not self.valid:
+			return
+
+		print('%s: %s' % (self.get_app_name(), '{:b}'.format(self.fields['permissions'])))
 
 	def get_app_size (self):
 		'''
