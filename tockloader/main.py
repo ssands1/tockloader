@@ -553,7 +553,7 @@ def main ():
 	# 	help='The value of the permission to change (true/false or 0/1)')
 
 	listpermissions = subparser.add_parser('list-permissions',
-		parents=[parent, parent_apps],
+		parents=[parent, parent_apps, parent_jtag],
 		help='List hardware permissions for each installed app')
 	listpermissions.set_defaults(func=command_list_permissions)
 	listpermissions.add_argument('name',
