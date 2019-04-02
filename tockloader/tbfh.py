@@ -55,15 +55,16 @@ class TBFHeader:
 				self.valid = True
 
 		elif self.version == 2 and len(buffer) >= 22:
-			base = struct.unpack('<HIIIQ', buffer[:22])
+			base = struct.unpack('<HIIQI', buffer[:22])
+			print('hey, I got the buffer to be %s' % hex(buffer[:22])
 			buffer = buffer[22:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
 			self.fields['flags'] = base[2]
 			self.fields['permissions'] = base[3]
 			self.fields['checksum'] = base[4]
-			print('hey, I got the permissions to equal %d!'%self.fields['permissions'])
-			print('hey, I got the checksum to equal %d!'%self.fields['checksum'])
+			print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
+			print('hey, I got the checksum to equal %s!'% hex(self.fields['checksum']))
 			# permission bit mappings
 			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
 			# lest a user grant access to the wrong hardware.
