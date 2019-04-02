@@ -767,7 +767,6 @@ class BootloaderSerial(BoardInterface):
 		self.miniterm.set_rx_encoding('UTF-8')
 		self.miniterm.set_tx_encoding('UTF-8')
 
-		# print("ok yah so now we know")
 		self.miniterm.start()
 		try:
 			self.miniterm.join(True)

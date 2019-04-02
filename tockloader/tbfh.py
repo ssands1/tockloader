@@ -62,7 +62,7 @@ class TBFHeader:
 			self.fields['flags'] = base[2]
 			self.fields['permissions'] = base[3]
 			self.fields['checksum'] = base[4]
-
+			print('hey, I got the permissions to equal %d!'%self.fields['permissions'])
 			# permission bit mappings
 			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
 			# lest a user grant access to the wrong hardware.
