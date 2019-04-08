@@ -63,8 +63,8 @@ class TBFHeader:
 			self.fields['flags'] = base[2]
 			self.fields['checksum'] = base[3]
 			self.fields['permissions'] = base[4]
-			print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
 			print('hey, I got the checksum to equal %s!'% hex(self.fields['checksum']))
+			print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
 			# permission bit mappings
 			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
 			# lest a user grant access to the wrong hardware.
@@ -109,7 +109,7 @@ class TBFHeader:
 				struct.pack_into('<I', nbuf, 12, 0)
 				checksum = self._checksum(nbuf)
 
-				remaining = self.fields['header_size'] - 16
+				remaining = self.fields['header_size'] - 24
 
 				# Now check to see if this is an app or padding.
 				if remaining > 0 and len(buffer) >= remaining:
