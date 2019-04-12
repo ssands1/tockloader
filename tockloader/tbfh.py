@@ -161,7 +161,9 @@ class TBFHeader:
 								self.fields['minimum_stack_length'] = base[9]
 
 								self.pic_strategy = 'C Style'
+
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
+							if remaining >= 8 and length == 8
 								base = struct.unpack('<Q', buffer[0:8])
 								self.fields['permissions'] = base[0]
 								print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
