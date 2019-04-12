@@ -57,7 +57,7 @@ class TBFHeader:
 
 		elif self.version == 2 and len(buffer) >= 14:
 			base = struct.unpack('<HIII', buffer[:14])
-			print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:14], 'big')))
+			print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:64], 'big')))
 			buffer = buffer[14:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
