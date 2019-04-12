@@ -55,7 +55,7 @@ class TBFHeader:
 			if checksum == self.fields['checksum']:
 				self.valid = True
 
-		elif self.version == 2 and len(buffer) >= 22:
+		elif self.version == 2 and len(buffer) >= 14:
 			base = struct.unpack('<HIII', buffer[:14])
 			# print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:14], 'big')))
 			buffer = buffer[14:]
@@ -63,8 +63,8 @@ class TBFHeader:
 			self.fields['total_size'] = base[1]
 			self.fields['flags'] = base[2]
 			self.fields['checksum'] = base[3]
-			# print('hey, I got the checksum to equal %s!'% hex(self.fields['checksum']))
-			# print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
+			print('hey, I got the checksum to equal %s!'% hex(self.fields['checksum']))
+
 			# permission bit mappings
 			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
 			# lest a user grant access to the wrong hardware.
@@ -164,6 +164,8 @@ class TBFHeader:
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
 								base = struct.unpack('<Q', buffer[0:8])
 								self.fields['permissions'] = base[0]
+								print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
+
 						else:
 							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
 							print('Warning: You might want to update tockloader.')
