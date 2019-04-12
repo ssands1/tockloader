@@ -57,7 +57,7 @@ class TBFHeader:
 
 		elif self.version == 2 and len(buffer) >= 14:
 			base = struct.unpack('<HIII', buffer[:14])
-			# print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:14], 'big')))
+			print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:14], 'big')))
 			buffer = buffer[14:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
@@ -167,6 +167,8 @@ class TBFHeader:
 								base = struct.unpack('<Q', buffer[0:8])
 								self.fields['permissions'] = base[0]
 								print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
+							else:
+								print('wahhhhhhhhhhhhhh')
 
 						else:
 							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
