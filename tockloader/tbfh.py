@@ -10,6 +10,7 @@ class TBFHeader:
 	HEADER_TYPE_WRITEABLE_FLASH_REGIONS = 0x02
 	HEADER_TYPE_PACKAGE_NAME            = 0x03
 	HEADER_TYPE_PIC_OPTION_1            = 0x04
+	HEADER_TYPE_PERMISSIONS             = 0x06
 
 	def __init__ (self, buffer):
 		self.valid = False
@@ -55,16 +56,15 @@ class TBFHeader:
 				self.valid = True
 
 		elif self.version == 2 and len(buffer) >= 22:
-			base = struct.unpack('<HIIIQ', buffer[:22])
-			print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:22], 'big')))
-			buffer = buffer[22:]
+			base = struct.unpack('<HIII', buffer[:14])
+			# print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:14], 'big')))
+			buffer = buffer[14:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
 			self.fields['flags'] = base[2]
 			self.fields['checksum'] = base[3]
-			self.fields['permissions'] = base[4]
-			print('hey, I got the checksum to equal %s!'% hex(self.fields['checksum']))
-			print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
+			# print('hey, I got the checksum to equal %s!'% hex(self.fields['checksum']))
+			# print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
 			# permission bit mappings
 			# NOTE: it's crucial that this mapping stays in sync with the one in Tock
 			# lest a user grant access to the wrong hardware.
@@ -109,7 +109,7 @@ class TBFHeader:
 				struct.pack_into('<I', nbuf, 12, 0)
 				checksum = self._checksum(nbuf)
 
-				remaining = self.fields['header_size'] - 24
+				remaining = self.fields['header_size'] - 16
 
 				# Now check to see if this is an app or padding.
 				if remaining > 0 and len(buffer) >= remaining:
@@ -161,6 +161,9 @@ class TBFHeader:
 								self.fields['minimum_stack_length'] = base[9]
 
 								self.pic_strategy = 'C Style'
+						elif tipe == self.HEADER_TYPE_PERMISSIONS:
+								base = struct.unpack('<Q', buffer[0:8])
+								self.fields['permissions'] = base[0]
 						else:
 							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
 							print('Warning: You might want to update tockloader.')
