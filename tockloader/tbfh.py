@@ -163,9 +163,10 @@ class TBFHeader:
 								self.pic_strategy = 'C Style'
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
-							if remaining >= 8 and length == 8:
-								base = struct.unpack('<Q', buffer[0:8])
-								self.fields['permissions'] = base[0]
+							if remaining >= 8 and length == 12:
+								# TODO: find out why these random 4 bytes show up before the Q
+								base = struct.unpack('<IQ', buffer[0:12])
+								self.fields['permissions'] = base[1]
 								print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
 							else:
 								print('wahhhhhhhhhhhhhh')
