@@ -57,7 +57,7 @@ class TBFHeader:
 
 		elif self.version == 2 and len(buffer) >= 14:
 			base = struct.unpack('<HIII', buffer[:14])
-			print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:64], 'big')))
+			# print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:64], 'big')))
 			buffer = buffer[14:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
@@ -163,10 +163,11 @@ class TBFHeader:
 								self.pic_strategy = 'C Style'
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
-							if remaining >= 8 and length == 12:
+							if remaining >= 12 and length == 12:
 								# TODO: find out why these random 4 bytes show up before the Q
 								base = struct.unpack('<IQ', buffer[0:12])
 								self.fields['permissions'] = base[1]
+								print('hey, I got the struct to be %s' % hex(int.from_bytes(buffer[:12], 'little')))
 								print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
 							else:
 								print('wahhhhhhhhhhhhhh')
