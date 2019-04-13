@@ -10,7 +10,7 @@ class TBFHeader:
 	HEADER_TYPE_WRITEABLE_FLASH_REGIONS = 0x02
 	HEADER_TYPE_PACKAGE_NAME            = 0x03
 	HEADER_TYPE_PIC_OPTION_1            = 0x04
-	HEADER_TYPE_PERMISSIONS             = 0x06
+	HEADER_TYPE_PERMISSIONS             = 0x05
 
 	def __init__ (self, buffer):
 		self.valid = False
