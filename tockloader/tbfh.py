@@ -5,6 +5,7 @@ class TBFHeader:
 	Tock Binary Format header class. This can parse TBF encoded headers and
 	return various properties of the application.
 	'''
+	PERM_LENGTH = 20 # number of bytes of permissions
 
 	HEADER_TYPE_MAIN                    = 0x01
 	HEADER_TYPE_WRITEABLE_FLASH_REGIONS = 0x02
@@ -57,7 +58,7 @@ class TBFHeader:
 
 		elif self.version == 2 and len(buffer) >= 14:
 			base = struct.unpack('<HIII', buffer[:14])
-			# print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:64], 'big')))
+			print('hey, I got the buffer to be %s' % hex(int.from_bytes(buffer[:64], 'big')))
 			buffer = buffer[14:]
 			self.fields['header_size'] = base[0]
 			self.fields['total_size'] = base[1]
@@ -163,12 +164,12 @@ class TBFHeader:
 								self.pic_strategy = 'C Style'
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
-							if remaining >= 12 and length == 12:
+							if remaining >= 20 and length == 20:
 								# TODO: find out why these random 4 bytes show up before the Q
-								base = struct.unpack('<IQ', buffer[0:12])
-								self.fields['permissions'] = base[1]
-								print('hey, I got the struct to be %s' % hex(int.from_bytes(buffer[:12], 'little')))
-								print('hey, I got the permissions to equal %s!'% hex(self.fields['permissions']))
+								base = struct.unpack('<QQI', buffer[0:20])
+								self.fields['permissions'] = base[0]
+								print('hey, I got the permissions to equal %s %s %s!'
+									% (hex(base[0]), hex(base[1]), hex(base[2])))
 							else:
 								print('wahhhhhhhhhhhhhh')
 
