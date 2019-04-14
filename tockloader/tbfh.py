@@ -175,6 +175,8 @@ class TBFHeader:
 							else:
 								print('wahhhhhhhhhhhhhh remaining = %d; length = %d; perm_length = %d'
 									% (remaining, length, perm_length))
+								print("remaining >= perm_length: %b; length == perm_length: %b"
+									% (remaining >= perm_length, length == perm_length))
 						else:
 							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
 							print('Warning: You might want to update tockloader.')
