@@ -5,7 +5,6 @@ class TBFHeader:
 	Tock Binary Format header class. This can parse TBF encoded headers and
 	return various properties of the application.
 	'''
-	PERM_LENGTH = 20 # number of bytes of permissions
 
 	HEADER_TYPE_MAIN                    = 0x01
 	HEADER_TYPE_WRITEABLE_FLASH_REGIONS = 0x02
@@ -164,15 +163,18 @@ class TBFHeader:
 								self.pic_strategy = 'C Style'
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
-							if remaining >= 20 and length == 20:
-								# TODO: find out why these random 4 bytes show up before the Q
-								base = struct.unpack('<QQI', buffer[0:20])
-								self.fields['permissions'] = base[0]
-								print('hey, I got the permissions to equal %s %s %s!'
-									% (hex(base[0]), hex(base[1]), hex(base[2])))
+							perm_length = (len(self.permission_bits) + 7) / 8
+							if remaining >= perm_length and length == perm_length:
+								debug = "hey, I got the permissions to equal"
+								self.fields['permissions'] = 0
+								for i in range(0, perm_length):
+									self.fields['permissions'] <<= 8
+									self.fields['permissions'] ^= buffer[i]
+									debug += ' %s' % hex(buffer[i])
+								print(debug)
 							else:
-								print('wahhhhhhhhhhhhhh')
-
+								print('wahhhhhhhhhhhhhh remaining = %d; length = %d; perm_length = %d'
+									% (remaining, length, perm_length))
 						else:
 							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
 							print('Warning: You might want to update tockloader.')
