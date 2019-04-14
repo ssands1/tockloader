@@ -164,7 +164,7 @@ class TBFHeader:
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
 							perm_length = (len(self.permission_bits) + 7) / 8
-							if remaining >= perm_length and length == perm_length:
+							if remaining >= perm_length and length == 4:
 								debug = "hey, I got the permissions to equal"
 								self.fields['permissions'] = 0
 								for i in range(0, perm_length):
