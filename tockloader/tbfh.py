@@ -163,10 +163,9 @@ class TBFHeader:
 								self.pic_strategy = 'C Style'
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
-							PERM_LENGTH = 4 * 3 # three 4-byte integers
-							if remaining >= PERM_LENGTH and length == PERM_LENGTH:
+							if remaining >= length:
 								self.fields['permissions'] = 0
-								for i in range(0, PERM_LENGTH):
+								for i in range(0, length):
 									self.fields['permissions'] <<= 8
 									self.fields['permissions'] ^= buffer[i]
 								print("hey, I got the permissions to equal %s!"
