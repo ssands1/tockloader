@@ -5,7 +5,6 @@ class TBFHeader:
 	Tock Binary Format header class. This can parse TBF encoded headers and
 	return various properties of the application.
 	'''
-	PERM_LENGTH = 4 * 3 # three 4-byte integers
 
 	HEADER_TYPE_MAIN                    = 0x01
 	HEADER_TYPE_WRITEABLE_FLASH_REGIONS = 0x02
@@ -164,6 +163,7 @@ class TBFHeader:
 								self.pic_strategy = 'C Style'
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
+							PERM_LENGTH = 4 * 3 # three 4-byte integers
 							if remaining >= PERM_LENGTH and length == PERM_LENGTH:
 								self.fields['permissions'] = 0
 								for i in range(0, PERM_LENGTH):
