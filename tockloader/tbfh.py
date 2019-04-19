@@ -5,6 +5,7 @@ class TBFHeader:
 	Tock Binary Format header class. This can parse TBF encoded headers and
 	return various properties of the application.
 	'''
+	PERM_LENGTH = 4 * 3 # three 4-byte integers
 
 	HEADER_TYPE_MAIN                    = 0x01
 	HEADER_TYPE_WRITEABLE_FLASH_REGIONS = 0x02
@@ -163,20 +164,17 @@ class TBFHeader:
 								self.pic_strategy = 'C Style'
 
 						elif tipe == self.HEADER_TYPE_PERMISSIONS:
-							perm_length = int((len(self.permission_bits) + 7) / 8)
-							if remaining >= perm_length and length == perm_length:
-								debug = "hey, I got the permissions to equal"
+							if remaining >= PERM_LENGTH and length == PERM_LENGTH:
 								self.fields['permissions'] = 0
-								for i in range(0, perm_length):
+								for i in range(0, PERM_LENGTH):
 									self.fields['permissions'] <<= 8
 									self.fields['permissions'] ^= buffer[i]
-									debug += ' %s' % hex(buffer[i])
-								print(debug)
-							else:
-								print('wahhhhhhhhhhhhhh remaining = %d; length = %d; perm_length = %d'
-									% (remaining, length, perm_length))
-								print("remaining >= perm_length: %s; length == perm_length: %s"
-									% (remaining >= perm_length, length == perm_length))
+								print("hey, I got the permissions to equal %s!"
+									% self.fields['permissions'])
+							# else:
+							# 	debug += ' %s' % hex(buffer[i])
+							# 	print(debug)
+							# 	print('wahhhhhhhhhhhhhh remaining = %d; length = %d; PERM_LENGTH = %d'
 						else:
 							print('Warning: Unknown TLV block in TBF header: %d.' % tipe)
 							print('Warning: You might want to update tockloader.')
@@ -266,10 +264,12 @@ class TBFHeader:
 
 		if value.lower() == 'true' or value.lower() == 't' or value == '1':
 			self.fields['permissions'] |= 1 << bit
-			print('Successfully allowed %s'%name)
+			print('Successfully allowed %s: '%name)
+			print('%s: %s' % (self.get_app_name(), '{:b}'.format(self.fields['permissions'])))
 		else:
 			self.fields['permissions'] &= ~(1 << bit)
-			print('Successfully disallowed %s'%name)
+			print('Successfully disallowed %s:'%name)
+			print('%s: %s' % (self.get_app_name(), '{:b}'.format(self.fields['permissions'])))
 
 	def list_permissions (self):
 		'''
